@@ -1,0 +1,167 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHL</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'assets/mhl.png' %}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&family=Sono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body style="font-family: 'Roboto', sans-serif; font-weight: 400;">
+    <div class="navbar-fixed">
+        <ul id="dropdown1"class="dropdown-content deep-purple darken-2">
+            <li><a href="/#about" class="white-text">ABOUT US</a></li>
+            <li><a class="white-text">OUR SERVICES</a></li>
+            <li><a href="/blogs" class="white-text">BLOG</a></li>
+            <li><a href="/news" class="white-text">NEWS</a></li>
+            <li><a href="/gallery" class="white-text">IMAGE AND VIDEO GALLERY</a></li>
+            <li><a class="white-text">PRIVACY AND POLICY</a></li>
+            <li><a class="white-text">FAQ</a></li>
+        </ul>
+        <nav>
+            <div class="nav-wrapper deep-purple darken-2">
+                <a href="/" class="brand-logo right" style="padding-right: 20px; padding-top: 10px;"><img width="50px" src="{% static 'assets/mhl.svg' %}" ></a>
+                <ul class="left hide-on-med-and-down">
+                    <li><a class="dropdown-trigger" href="#!" data-target="dropdown1">
+                        MORE<i class="material-icons right">arrow_drop_down</i>
+                    </a></li>
+                    {% if request.user.is_authenticated %}
+                    <li><a href="/dashboard" style="text-transform: uppercase;">{{user_profile}}</a></li>
+                    {% else %}
+                    <li><a href="/login">LOGIN</a></li>
+                    {% endif %}
+                    <li><a href="/#contact">CONTACT US</a></li>
+                    <li><a>REVIEWS</a></li>
+                </ul>
+                <ul class="right hide-on-med-and-down" style="margin-right: 150px">
+                    <li><a><i class="material-icons search-icon">search</i></a></li>
+                    <!-- <li><a><i class="material-icons">contact_phone</i></a></li> -->
+                </ul>
+                <a data-target="slide-out" class="sidenav-trigger hide-on-large-only"><i class="material-icons">menu</i></a>
+            </div>
+            <div class="nav-wrapper white search-nav">
+                <form action="search" method="POST">
+                    {% csrf_token %}
+                    <div class="input-field">
+                        <input id="search" name="search" type="search" required>
+                        <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+                        <i class="material-icons" id="close">close</i>
+                    </div>
+            </form>
+            </div>
+        </nav>
+        <ul id="slide-out" class="sidenav blue-grey darken-4">
+            <br>
+            {% if request.user.is_authenticated %}
+            <li><a class="white-text" style="text-transform: uppercase;">{{user_profile}}</a></li>
+            {% else %}
+            <li><a class="white-text">LOGIN</a></li>
+            {% endif %}
+            <li><a class="white-text" href="/#contact">CONTACT US</a></li>
+            <li><a class="white-text">REVIEWS</a></li>
+            <li><a href="/#about" class="white-text">ABOUT US</a></li>
+            <li><a class="white-text">OUR SERVICES</a></li>
+            <li><a href="/blogs" class="white-text">BLOG</a></li>
+            <li><a href="/news" class="white-text">NEWS</a></li>
+            <li><a class="white-text">IMAGE AND VIDEO GALLERY</a></li>
+            <li><a class="white-text">PRIVACY AND POLICY</a></li>
+            <li><a class="white-text">FAQ</a></li>
+        </ul>
+    </div>
+
+    
+<main>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="deep-purple lighten-2">
+        <a class="center" style="margin: 5px;"><h4 class="black-text">{{ message }}</h4></a>
+    </div>
+    {% endfor %}
+    {% endif %}
+    
+    {% block content %}
+    {% endblock %}
+</main>
+    
+    <footer id="contact" class="page-footer deep-purple darken-4" 
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-easing="ease-in-out">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">MIC HORTICULTURE LIMITED</h5>
+                    <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="white-text">Contact</h5>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="#!"><i class="material-icons">home</i> Nairobi CBD</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!"><i class="material-icons">phone</i> 0700000000</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!"><i class="material-icons">mail</i> mhl@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                © 2022 Copyright Text
+                <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- scripts   -->
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        $(document).ready(function(){
+            // Initialize Dropdown
+            $(".dropdown-trigger").dropdown({ constrainWidth: false });
+            // Initialize Tabs
+            $('.tabs').tabs();
+
+            // Display and Focus search input
+            $(".search-icon").click(function() {
+                $(".search-nav").css("display", "block");
+                $("#search").focus();
+            });
+
+            // Hide search input
+            $( "#close" ).click(function() {
+                $(".search-nav").css("display", "none");
+            });
+
+            // Sidenav
+            $('.sidenav').sidenav();
+        });
+
+        // Masonry Js
+        $('.grid').masonry({
+            // set itemSelector so .grid-sizer is not used in layout
+            itemSelector: '.grid-item',
+            // use element for option
+            columnWidth: '.grid-sizer',
+            percentPosition: true
+        })
+
+        //Initialize animate on scroll
+        AOS.init();
+    </script>
+</body>
+</html>

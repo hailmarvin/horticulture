@@ -1,0 +1,29 @@
+{% extends 'blog.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col m3"></div>
+  <form class="col s12 m6 form-upload"  enctype="multipart/form-data" method="POST" style="margin-top: 100px; margin-bottom: 100px;">
+    <h4 class="deep-purple-text text-darken-3" style="font-weight: 700;">Upload News</h4>
+    {% csrf_token %}
+    <div class="input-field">
+      <label>Title</label>
+      <input type="text" required id="title" name="title" class="">
+    </div>
+    <div class="input-field">
+      <textarea id="info" name="info" class="materialize-textarea"></textarea>
+      <label for="info">Text</label>
+    </div>
+    <div class="file-field input-field">
+      <div class="btn blue-grey darken2">
+        <span>Choose Image</span>
+        <input type="file" id="image" name="image">
+      </div>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text">
+      </div>
+    </div>
+    <button type="submit" class="btn blue-grey darken-4">Submit</button>
+  </form>
+</div>
+{% endblock %}

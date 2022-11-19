@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="profile-container" style=" padding-left: 200px;">
+    <h3 class="white-text" style="margin-top: 30vh;">Hello <b>{{user_profile}}</b></h3>
+    <a href="/logout" class="btn large-btn teal lighten-2">Signout</a>
+</div>
+<div class="row" style="margin-top: -50px;">
+    <div class="col m1"></div>
+    <div class="col s12 m10">
+      <div class="card-panel">
+        <h3>You have {{ user_blogs.count }} blogs</h3>
+      </div>
+    </div>
+    <div class="col m1"></div>
+
+    {% for blog in user_blogs %}
+    <div class="col m2"></div>
+    <div class="col s12 m8"
+        data-aos="fade-up">
+        <div class="card horizontal" onclick='location.href="/blogs/{{blog.id}}";'>
+            <div class="card-stacked">
+                <div class="card-content" style="padding-top:10px;">
+                    <h3 class="grey-text text-darken-4">
+                        {{blog.title}}
+                    </h3>
+                    <span class="card-title">Card Title</span>
+                    <p class="grey-text text-darken-4" style="-webkit-line-clamp: 5">
+                        {{blog.info}} ...
+                    </p>
+                    <br>
+                </div>
+            </div>
+            <div class="card-image">
+                <img src="{{blog.image.url}}">
+            </div>
+        </div>
+    </div>
+    <div class="col m2"></div>
+    {% endfor %}
+</div>
+{% endblock %}

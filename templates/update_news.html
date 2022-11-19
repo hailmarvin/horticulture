@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+<div class="container"> 
+    <div class="row">
+        <div class="s12 m12">
+            
+            <form action="" method="POST" enctype="multipart/form-data">
+                
+                {% csrf_token %}
+                <h4 class="deep-purple-text text-darken-4" style="font-weight: 700;">Update</h4>
+                
+                <img width="200" src="{{news.image.url}}" >
+                <div class="file-field input-field">
+                    <div class="btn wave-btn blue-grey darken-3">
+                        <span>Profile Image</span>
+                        <input type="file" name="image" id="image">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text">
+                    </div>
+                </div>
+
+                <div class="input-field">
+                    <label>Title</label>
+                    <input type="text" required id="title" name="title" class="" value="{{news.title}}">
+                </div>
+
+                <div class="input-field">
+                    <textarea id="info" name="info" class="materialize-textarea">{{news.info}}</textarea>
+                    <label for="info">Info</label>
+                </div>
+                
+                <div class="right">
+                    <button class="btn wave-btn yellow darken-4"><a class="white-text" href="/">Cancel </a></button>
+                    <button type="submit" class="btn wave-btn blue-grey darken-3"> Save </button>
+                </div>
+            </form>  
+            
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

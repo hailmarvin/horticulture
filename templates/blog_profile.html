@@ -1,0 +1,74 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<div data-aos="fade-right"
+data-aos-anchor-placement="top-bottom"
+class="row">
+<div class="col m1"></div>
+<div class="col s12 m10">
+	<div class="card">
+		<div class="card-image">
+			<img src="{{blog.image.url}}">
+			<span class="card-title" 
+			style="background-color: rgba(0, 0, 0, 0.2);
+				   font-size: 40px; 
+				   font-weight: 500;
+				   text-transform: uppercase;">{{blog.title}}</span>
+		</div>
+		<div class="col m1"></div>
+		<div class="card-content col s12 m10">
+			<span class="black-text">
+				<div class="post-price grey-text text-darken-1">By: <span><a class="blue-grey-text text-darken-3">{{blog.user}}</a></span></div>
+			</span>
+			
+			<span class="black-text">
+				<div class="post-price grey-text text-darken-1">Date: <span><a class="blue-grey-text text-lighten-1">{{blog.created_at}}</a></span></div>
+			</span>
+			
+			<span class="black-text">
+				<span class="grey-text text-darken-3">{{blog.info}}</span>
+			</span>
+			
+			{% if blog.user == str_user %}
+			<a href="/blogs/{{blog.id}}/delete" class="btn right wave-btn red darken-2">Delete Blog</a>
+			<a href="/blogs/{{blog.id}}/update" class="btn right wave-btn blue-grey darken-2">Update Blog</a>
+			{% endif %}
+		</div>	
+	</div>
+</div>
+<br>
+<div class="col m3"></div>
+<div class="col s12 m6">
+	<div class="row">
+		<div class="col s12">
+			<div class="card-panel">
+				<h5>Comments</h5>
+				<form class="col s12" method="POST">
+					{% csrf_token %}
+					<div class="row">
+						<div class="input-field col s10">
+							<textarea id="textarea1" name="comment" class="materialize-textarea" required></textarea>
+							<label for="textarea1">Type your comment here</label>
+						</div>
+						<button class="col s2 btn wave-btn blue-grey darken-2" type="submit">
+							<i class="material-icons">send</i>
+						</button>
+					</div>
+				</form>
+				<p>Other comments</p>
+				<div style="height: 110px; overflow-x: hidden; overflow-y: auto; text-align:justify;">
+					{% for comment in comments %}
+					<div>
+						<span><b>{{comment.user}}</b>: {{comment.comment}}<span class="right grey-text grey-darken-1">{{comment.commented_on}}</span></span>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+</div>
+
+{% endblock %}

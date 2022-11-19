@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div style="margin: 30px;">
+    <h3 class="grey-text text-darken-2">News
+        <a href="/upload-news" class="btn right blue-grey darken-4 waves-effect waves-light btn-large">
+            <i class="left material-icons">add</i>News
+        </a>
+    </h3>
+    <br>
+    {% if news.count == 0 %}
+        <div class="card-panel">
+            <h5 class="card-panel deep-purple white-text"><i class="material-icons large white-text">mood_bad</i>There are no uploaded news</h5>
+        </div>
+    {% else %}
+        {% for news in news %}
+        <div class="row">
+            <div class="col m2"></div>
+            <div class="col s12 m8"
+                data-aos="fade-up">
+                <div class="card horizontal">
+                    <div class="card-stacked">
+                        <div class="card-content" style="padding-top:10px;">
+                            <h3 class="grey-text text-darken-4">
+                                {{ news.title }}
+                            </h3>
+                            <span class="card-title">Card Title</span>
+                            <p class="grey-text text-darken-4">
+                                {{ news.info }}
+                            </p>
+                            <br>
+                            <a href="/news/{{news.id}}" class="btn grey darken-4 white-text">Read more</a>
+                        </div>
+                    </div>
+                    <div class="card-image">
+                        <img src="{{ news.image.url }}">
+                    </div>
+                </div>
+            </div>
+            <div class="col m2"></div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+{% endblock %}

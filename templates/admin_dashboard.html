@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col s12">
+        <br>
+        <div class="container">
+            <h5>Total Number of Users: {{users|length}}</h5>
+            <a href="/logout" class="btn right large-btn deep-purple lighten-2">Signout</a>
+        </div>
+        <br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {% for user in users %}  
+                <tr>
+                    <td>{{user}}</td>
+                    <td>
+                        {% if user.is_employee != True %}
+                        <a  onclick="change('{{ user.id }}')" class="waves-effect waves-light deep-purple darken-2 btn-large">Make Employeee</a>
+                        {% else %}
+                        <a  onclick="change('{{ user.id }}')" class="waves-effect waves-light lime accent-1 btn-large">Remove as Employeee</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    const change = (user_id) => {
+		fetch(`/user/${user_id}/change/`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then(rest => {
+			window.location.reload();
+		})
+	}
+</script>
+
+{% endblock %}

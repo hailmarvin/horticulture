@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+{% if blogs.count == 0 %}
+        <div class="card-panel">
+            <h5 class="card-panel deep-purple white-text"><i class="material-icons large white-text">mood_bad</i>There are no uploaded blogs</h5>
+        </div>
+{% else %}
+<div style="margin: 30px;">
+    <h3 class="grey-text text-darken-2">Blogs
+        <a href="/upload-blog" class="btn right blue-grey darken-4 waves-effect waves-light btn-large">
+            <i class="left material-icons">add</i>New Blog
+        </a>
+    </h3>
+    <br>
+    <div class="grid">
+        <div class="grid-sizer" style="display: none;">
+            <div class="card">
+                <div class="card-image">
+                    <img src="{% static 'images/tomatoes.jpg' %}">
+                </div>
+                <div class="card-content blue-grey lighten-5">
+                    <p>I am a very simple card. I am good at containing small bits of information.
+                        I am convenient because I require little markup to use effectively.
+                        I am a very simple card. I am good at containing small bits of information.
+                        I am convenient because I require little markup to use effectively.
+                        I am a very simple card. I am good at containing small bits of information.
+                        I am convenient because I require little markup to use effectively...
+                    </p>
+                    <br>
+                    <a class="btn grey darken-4 white-text">Read more</a>
+                </div>
+            </div>
+        </div>
+        {% for blog in blogs %}
+            <div class="grid-item"
+                data-aos="fade-up">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{{blog.image.url}}">
+                    </div>
+                    <div class="card-content blue-grey lighten-5">
+                        <p style="-webkit-line-clamp: 20">>{{blog.info}}</p>
+                        <br>
+                        <a href="blogs/{{blog.id}}" class="btn grey darken-4 white-text">Read more</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>    
+{% endif %}    
+{% endblock %}
