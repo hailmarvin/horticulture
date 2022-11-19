@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpRequest
 from itertools import chain
 
 # Create your views here.
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def index(request):
     if request.user.is_authenticated and not request.user.is_staff :
         user_profile = Profile.objects.get(user=request.user)
@@ -18,10 +18,39 @@ def index(request):
     else:
         return render(request, 'index.html')
 
-def signin(request):
+def authentication(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+
+        if 'email' in request.POST:
+            email = request.POST['email']
+            password = request.POST['password']
+            password2 = request.POST['password2']
+
+            if password == password2:
+                if User.objects.filter(email=email).exists():
+                    messages.info(request, 'Email Taken')
+                    return redirect('/auth')
+                elif User.objects.filter(username=username).exists():
+                    messages.info(request, 'Username Taken')
+                    return redirect('/auth')
+                else:
+                    user = User.objects.create_user(username=username, email=email, password=password)
+                    user.save()
+
+                    #log user in and redirect to settings page
+                    user_login = auth.authenticate(username=username, password=password)
+                    auth.login(request, user_login)
+
+                    #create a Profile object for the new user
+                    user_model = User.objects.get(username=username)
+                    new_profile = Profile.objects.create(user=user_model, id_user=user_model.id)
+                    new_profile.save()
+                    return redirect('/')
+            else:
+                messages.info(request, 'Password not Matching')
+                return redirect('/auth')
 
         user = auth.authenticate(username=username, password=password)
 
@@ -30,78 +59,52 @@ def signin(request):
             return redirect('/')
         else:
             messages.info(request, 'Wrong username or password!')
-            return redirect('/login')
+            return redirect('/auth')
 
     else:
         return render(request, 'auth.html')
 
-def signup(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        email = request.POST['email']
-        password = request.POST['password']
-        password2 = request.POST['password2']
-
-        if password == password2:
-            if User.objects.filter(email=email).exists():
-                messages.info(request, 'Email Taken')
-                return redirect('/signup')
-            elif User.objects.filter(username=username).exists():
-                messages.info(request, 'Username Taken')
-                return redirect('/signup')
-            else:
-                user = User.objects.create_user(username=username, email=email, password=password)
-                user.save()
-
-                #log user in and redirect to settings page
-                user_login = auth.authenticate(username=username, password=password)
-                auth.login(request, user_login)
-
-                #create a Profile object for the new user
-                user_model = User.objects.get(username=username)
-                new_profile = Profile.objects.create(user=user_model, id_user=user_model.id)
-                new_profile.save()
-                return redirect('/')
-        else:
-            messages.info(request, 'Password Not Matching')
-            return redirect('/signup')
-        
-    else:
-        return render(request, 'auth.html')
-
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def logout(request):
     auth.logout(request)
     return redirect('signin')
 
-@login_required(login_url='/login')
-def del_user(request):    
-    if request.user.is_staff != True:
-        try:
-            u = User.objects.get(user = request.user)
+@login_required(login_url='/auth')
+def del_user(request, pk):    
+    try:
+        u = User.objects.get(id = pk)
+        if u.is_staff is not True:
             u.delete()
             messages.success(request, "User account deleted")  
             return render(request, 'auth.html')          
+        else:
+            messages.info(request, "You cannot delete an admin account")  
+            return render(request, 'auth.html')
 
-        except Exception as e: 
-            return render(request, 'auth.html',{'err':e.message})
+    except Exception as e: 
+        return render(request, 'auth.html',{'err':e.message})
 
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def change(request: HttpRequest, user_id: str) -> HttpResponse:
     user_profile = Profile.objects.get(id=user_id)
     user_profile.is_employee = not user_profile.is_employee
     user_profile.save()
     return index(request)
 
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def blog(request):
     blogs = Blog.objects.all().order_by('-id')
     for blog in blogs:
         print(blog.image.url)
-    user_profile = Profile.objects.get(user=request.user)
-    return render(request, 'blog.html', {'blogs': blogs, 'user_profile': user_profile})
 
-@login_required(login_url='/login')
+    if not request.user.is_staff:
+        user_profile = Profile.objects.get(user=request.user)
+        return render(request, 'blog.html', {'blogs': blogs, 'user_profile': user_profile})
+    else:
+        user_profile= request.user
+        return render(request, 'blog.html', {'blogs': blogs, 'user_profile': user_profile})
+
+@login_required(login_url='/auth')
 def blog_profile(request, pk):
     blog = Blog.objects.get(id=pk)
     comments = Comment.objects.filter(blog=blog)
@@ -157,7 +160,7 @@ def update_blog(request, pk):
 
     return render(request, 'update_blog.html', {'user_profile': user_profile, 'blog': blog})
 
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def upload_blog(request):
     user_profile = Profile.objects.get(user=request.user)
     
@@ -182,7 +185,7 @@ def upload_blog(request):
 
     return render(request, 'blog_upload.html', {'user_profile': user_profile})
 
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def delete_blog(request,pk):
     user_profile = request.user
     blog_to_delete=Blog.objects.get(id=pk)
@@ -195,14 +198,18 @@ def delete_blog(request,pk):
     else:
         return redirect('/')
 
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def news(request):
     news = News.objects.all().order_by('-id')
-    user_profile = Profile.objects.get(user=request.user)
-    print(user_profile.is_employee)
-    return render(request, 'news.html', {'news': news, 'user_profile': user_profile})
 
-@login_required(login_url='/login')
+    if not request.user.is_staff:
+        user_profile = Profile.objects.get(user=request.user)
+        return render(request, 'news.html', {'news': news, 'user_profile': user_profile})
+    else:
+        user_profile= request.user
+        return render(request, 'news.html', {'news': news, 'user_profile': user_profile})
+
+@login_required(login_url='/auth')
 def news_profile(request, pk):
     news = News.objects.get(id=pk)
     
@@ -210,7 +217,7 @@ def news_profile(request, pk):
 
     return render(request, 'news_profile.html', {'news': news, 'user_profile': user_profile})
 
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def upload_news(request):
     user_profile = Profile.objects.get(user=request.user)
 
@@ -239,7 +246,7 @@ def upload_news(request):
 
     return render(request, 'news_upload.html', {'user_profile': user_profile})
 
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def update_news(request, pk):
     user_profile = Profile.objects.get(user=request.user)
     news = News.objects.get(id=pk)
@@ -276,7 +283,7 @@ def update_news(request, pk):
         messages.info(request, "You are not authenticated to view that page")
         return redirect('index')
 
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def delete_news(request, pk):
     user_profile = Profile.objects.get(user=request.user)
     news_to_delete=News.objects.get(id=pk)
@@ -288,7 +295,7 @@ def delete_news(request, pk):
     else:
         return redirect('/')
 
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def dashboard(request):
     if request.user.is_staff:
         users = Profile.objects.all().order_by('-id')
@@ -299,7 +306,7 @@ def dashboard(request):
         user_blogs = Blog.objects.filter(user=str_user)
         return render(request, 'dashboard.html', {'user_profile': user_profile, 'user_blogs': user_blogs})
 
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def gallery(request):
     if request.user.is_authenticated:
         user_profile = Profile.objects.get(user=request.user)
@@ -339,7 +346,7 @@ def search(request):
 
     return render(request, 'search.html', { 'combined_list': combined_list})
 
-@login_required(login_url='/login')
+@login_required(login_url='/auth')
 def signout(request):
     auth.logout(request)
-    return redirect('/login')
+    return redirect('/auth')

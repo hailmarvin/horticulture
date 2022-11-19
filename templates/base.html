@@ -41,7 +41,7 @@
                     {% if request.user.is_authenticated %}
                     <li><a href="/dashboard" style="text-transform: uppercase;">{{user_profile}}</a></li>
                     {% else %}
-                    <li><a href="/login">LOGIN</a></li>
+                    <li><a href="/auth">LOGIN</a></li>
                     {% endif %}
                     <li><a href="/#contact">CONTACT US</a></li>
                     <li><a>REVIEWS</a></li>
@@ -86,7 +86,7 @@
 <main>
     {% if messages %}
     {% for message in messages %}
-    <div class="deep-purple lighten-2">
+    <div class="deep-purple lighten-2" id="msg">
         <a class="center" style="margin: 5px;"><h4 class="black-text">{{ message }}</h4></a>
     </div>
     {% endfor %}
@@ -162,6 +162,14 @@
 
         //Initialize animate on scroll
         AOS.init();
-    </script>
+
+         // hide message after 2 seconds   
+        setTimeout(function(){
+            if ($('#msg').length > 0) {
+                $('#msg').remove();
+            }
+        }, 5000)
+
+  </script>
 </body>
 </html>

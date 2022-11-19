@@ -5,9 +5,11 @@
 {% block content %}
 <div style="margin: 30px;">
     <h3 class="grey-text text-darken-2">News
+        {% if request.user.is_staff or user_profile.is_employee %}
         <a href="/upload-news" class="btn right blue-grey darken-4 waves-effect waves-light btn-large">
             <i class="left material-icons">add</i>News
         </a>
+        {% endif %}
     </h3>
     <br>
     {% if news.count == 0 %}
