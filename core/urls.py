@@ -19,5 +19,6 @@ urlpatterns = [
     path('logout', views.signout, name='logout'),
     path('dashboard',views.dashboard, name='dashboard'),
     path('search', views.search, name='search'),
-    path('gallery', views.gallery, name='gallery')
+    path('gallery', views.gallery, name='gallery'),
+    path('upload-gallery', views.upload_gallery, name='upload-gallery')
 ]

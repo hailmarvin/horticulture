@@ -37,11 +37,21 @@ class Comment(models.Model):
 
 class News(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    image = models.ImageField(upload_to='blog_images')
+    image = models.ImageField(upload_to='news_images')
     info = models.TextField()
     title = models.TextField()
     is_edited = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=datetime.now)
+
+    def __str__(self):
+        return self.title
+
+class Gallery(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    user = models.CharField(max_length=100)
+    media = models.FileField(upload_to='gallery_files')
+    title = models.TextField()
+    is_video = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title

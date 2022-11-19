@@ -6,44 +6,18 @@
 
 <div class="grid" style="margin-left: 20px; margin-right: 20px;">
     <div class="grid-sizer"></div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
+    {% for gallery in galleries %}
+    {% if gallery.is_video == True %}
+    <div class="grid-item" style="padding: 0;">
+        <video style="width: 100%;" autoplay muted>
+            <source src="{{gallery.media.url}}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
     </div>
+    {% else %}
     <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
+        <img style="display: block; max-width: 100%;" src="{{gallery.media.url}}">
     </div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
-    </div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
-    </div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
-    </div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
-    </div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
-    </div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
-    </div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
-    </div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
-    </div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
-    </div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
-    </div>
-    <div class="grid-item" style=" padding: 0;">
-        <img style="display: block; max-width: 100%;" src="{% static 'images/tomatoes.jpg' %}">
-    </div>
+    {% endfor %}
 </div>
 {% endblock %}

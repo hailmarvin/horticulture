@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Blog, News, Profile, Comment
+from .models import Blog, News, Profile, Comment, Gallery
 from django.http import HttpResponse, HttpRequest
 from itertools import chain
 
@@ -94,39 +94,45 @@ def change(request: HttpRequest, user_id: str) -> HttpResponse:
 @login_required(login_url='/auth')
 def blog(request):
     blogs = Blog.objects.all().order_by('-id')
-    for blog in blogs:
-        print(blog.image.url)
 
-    if not request.user.is_staff:
-        user_profile = Profile.objects.get(user=request.user)
-        return render(request, 'blog.html', {'blogs': blogs, 'user_profile': user_profile})
+    if request.user.is_authenticated:
+        if not request.user.is_staff:
+            user_profile = Profile.objects.get(user=request.user)
+            return render(request, 'blog.html', {'blogs': blogs, 'user_profile': user_profile})
+        else:
+            user_profile= request.user
+            return render(request, 'blog.html', {'blogs': blogs, 'user_profile': user_profile})
+
     else:
-        user_profile= request.user
-        return render(request, 'blog.html', {'blogs': blogs, 'user_profile': user_profile})
+         return render(request, 'blog.html', {'blogs': blogs})       
 
 @login_required(login_url='/auth')
 def blog_profile(request, pk):
     blog = Blog.objects.get(id=pk)
     comments = Comment.objects.filter(blog=blog)
 
-    if request.user.is_staff:
-        return render(request, 'blog_profile.html', {'blog': blog, 'admin': True, 'comments': comments})
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            return render(request, 'blog_profile.html', {'blog': blog, 'admin': True, 'comments': comments})
 
-    
-    user_profile = Profile.objects.get(user=request.user)
-    str_user = str(user_profile)
+        
+        user_profile = Profile.objects.get(user=request.user)
+        str_user = str(user_profile)
 
-    if request.method == "POST":
-        comment = request.POST['comment']
+        if request.method == "POST":
+            comment = request.POST['comment']
 
-        Comment.objects.create(
-            comment = comment,
-            user = request.user,
-            blog = blog
-        )
+            Comment.objects.create(
+                comment = comment,
+                user = request.user,
+                blog = blog
+            )
+            return render(request, 'blog_profile.html', {'blog': blog, 'user_profile': user_profile, 'str_user': str_user, 'comments': comments})
+
         return render(request, 'blog_profile.html', {'blog': blog, 'user_profile': user_profile, 'str_user': str_user, 'comments': comments})
 
-    return render(request, 'blog_profile.html', {'blog': blog, 'user_profile': user_profile, 'str_user': str_user, 'comments': comments})
+    else:
+        return render(request, 'blog_profile.html', {'blog': blog,'comments': comments})
 
 @login_required(login_url='/signin')
 def update_blog(request, pk):
@@ -198,24 +204,28 @@ def delete_blog(request,pk):
     else:
         return redirect('/')
 
-@login_required(login_url='/auth')
 def news(request):
     news = News.objects.all().order_by('-id')
 
-    if not request.user.is_staff:
-        user_profile = Profile.objects.get(user=request.user)
-        return render(request, 'news.html', {'news': news, 'user_profile': user_profile})
+    if request.user.is_authenticated:
+        if not request.user.is_staff:
+            user_profile = Profile.objects.get(user=request.user)
+            return render(request, 'news.html', {'news': news, 'user_profile': user_profile})
+        else:
+            user_profile= request.user
+            return render(request, 'news.html', {'news': news, 'user_profile': user_profile})
     else:
-        user_profile= request.user
-        return render(request, 'news.html', {'news': news, 'user_profile': user_profile})
+        return render(request, 'news.html', {'news': news})
 
 @login_required(login_url='/auth')
 def news_profile(request, pk):
     news = News.objects.get(id=pk)
     
-    user_profile = Profile.objects.get(user=request.user)
-
-    return render(request, 'news_profile.html', {'news': news, 'user_profile': user_profile})
+    if request.user.is_authenticated:
+        user_profile = Profile.objects.get(user=request.user)
+        return render(request, 'news_profile.html', {'news': news, 'user_profile': user_profile})
+    else:
+        return render(request, 'news_profile.html', {'news': news, })
 
 @login_required(login_url='/auth')
 def upload_news(request):
@@ -308,21 +318,43 @@ def dashboard(request):
 
 @login_required(login_url='/auth')
 def gallery(request):
+    galleries = Gallery.objects.order_by('-id')
     if request.user.is_authenticated:
         user_profile = Profile.objects.get(user=request.user)
-        return render(request, 'gallery.html', {'user_profile': user_profile})
+        return render(request, 'gallery.html', {'user_profile': user_profile, 'galleries': galleries})
     else:
-        return render(request, 'gallery.html')
+        return render(request, 'gallery.html', {'galleries': galleries})
+
+def upload_gallery(request):
+    user_profile = Profile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        media = request.FILES.get('media')
+        title = request.POST['title']
+        is_video = request.POST['mediatype']
+
+        if is_video == 'video':
+            Gallery.objects.create(
+                title = title,
+                media = media,
+                is_video = True
+            )
+        else:
+            Gallery.objects.create(
+                title = title,
+                media = media
+            )
+        messages.info(request, "Upload SUccessful")
+        return redirect('/gallery')
+    else:
+        return render(request, 'upload_gallery.html', {'user_profile': user_profile})
 
 def search(request):
     if request.method == 'POST':
         search = request.POST['search']
-        username_object = User.objects.filter(username__icontains=search)
         blog_titles_object = Blog.objects.filter(title__icontains=search)
         news_titles_object = News.objects.filter(title__icontains=search)
 
-        username_profile = []
-        username_profile_list = []
         blogs = []
         news_list = []
         total_list = []
