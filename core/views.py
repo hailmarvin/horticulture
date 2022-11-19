@@ -69,12 +69,12 @@ def signup(request):
     else:
         return render(request, 'auth.html')
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def logout(request):
     auth.logout(request)
     return redirect('signin')
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def del_user(request):    
     if request.user.is_staff != True:
         try:
@@ -86,14 +86,14 @@ def del_user(request):
         except Exception as e: 
             return render(request, 'auth.html',{'err':e.message})
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def change(request: HttpRequest, user_id: str) -> HttpResponse:
     user_profile = Profile.objects.get(id=user_id)
     user_profile.is_employee = not user_profile.is_employee
     user_profile.save()
     return index(request)
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def blog(request):
     blogs = Blog.objects.all().order_by('-id')
     for blog in blogs:
@@ -101,7 +101,7 @@ def blog(request):
     user_profile = Profile.objects.get(user=request.user)
     return render(request, 'blog.html', {'blogs': blogs, 'user_profile': user_profile})
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def blog_profile(request, pk):
     blog = Blog.objects.get(id=pk)
     comments = Comment.objects.filter(blog=blog)
@@ -157,7 +157,7 @@ def update_blog(request, pk):
 
     return render(request, 'update_blog.html', {'user_profile': user_profile, 'blog': blog})
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def upload_blog(request):
     user_profile = Profile.objects.get(user=request.user)
     
@@ -182,7 +182,7 @@ def upload_blog(request):
 
     return render(request, 'blog_upload.html', {'user_profile': user_profile})
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def delete_blog(request,pk):
     user_profile = request.user
     blog_to_delete=Blog.objects.get(id=pk)
@@ -195,14 +195,14 @@ def delete_blog(request,pk):
     else:
         return redirect('/')
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def news(request):
     news = News.objects.all().order_by('-id')
     user_profile = Profile.objects.get(user=request.user)
     print(user_profile.is_employee)
     return render(request, 'news.html', {'news': news, 'user_profile': user_profile})
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def news_profile(request, pk):
     news = News.objects.get(id=pk)
     
@@ -210,7 +210,7 @@ def news_profile(request, pk):
 
     return render(request, 'news_profile.html', {'news': news, 'user_profile': user_profile})
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def upload_news(request):
     user_profile = Profile.objects.get(user=request.user)
 
@@ -239,7 +239,7 @@ def upload_news(request):
 
     return render(request, 'news_upload.html', {'user_profile': user_profile})
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def update_news(request, pk):
     user_profile = Profile.objects.get(user=request.user)
     news = News.objects.get(id=pk)
@@ -276,7 +276,7 @@ def update_news(request, pk):
         messages.info(request, "You are not authenticated to view that page")
         return redirect('index')
 
-@login_required(login_url='signin')
+@login_required(login_url='/login')
 def delete_news(request, pk):
     user_profile = Profile.objects.get(user=request.user)
     news_to_delete=News.objects.get(id=pk)
